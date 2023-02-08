@@ -1,11 +1,18 @@
 import Head from 'next/head'
 import Header from "@/components/layout/Header";
-import Candy from "@/components/Candy";
-import {useEffect, useState} from "react";
+import Candy from "@/components/candy/Candy";
+import React, {useEffect, useState} from "react";
 import Player from "@/models/Player";
 import {CandyType} from "@/models/Candy";
-import CandyList from "@/components/CandyList";
+import CandyList from "@/components/candy/CandyList";
 import PlayerStatus from "@/components/PlayerStatus";
+import {Location as City} from "@/models/City";
+import LocationList from "@/components/location/LocationList";
+import Bank from "@/components/Bank";
+
+interface ICandyTypes {
+  [key: string]: string;
+}
 
 export default function Home() {
   const candyTypes =
@@ -19,11 +26,82 @@ export default function Home() {
         CandyType.MILKY_WAY,
         CandyType.HERSHEYS,
         CandyType.MARS];
+
+  const locations =
+      [City.CHICAGO,
+        City.DETROIT,
+        City.LAS_VEGAS,
+        City.LOS_ANGELES,
+        City.MIAMI,
+        City.BRONX,
+        City.SAN_DIEGO,
+        City.WASHINGTON_DC]
+
   const [player, setPlayer] = useState<Player | null>(null);
+  const [buyInputs, setBuyInputs] = useState<ICandyTypes>({});
+  const [sellInputs, setSellInputs] = useState<ICandyTypes>({});
 
   useEffect(() => {
     setPlayer(new Player());
   }, []);
+
+  const handleBuyInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    setBuyInputs(prevState => ({
+      ...prevState,
+      [e.target.name]: e.target.value
+    }));
+  }
+
+  const handleSellInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    setSellInputs(prevState => ({
+      ...prevState,
+      [e.target.name]: e.target.value
+    }));
+  }
+
+  const onBuySubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+    e.preventDefault();
+    const {name} = e.currentTarget;
+    const candyType = candyTypes.find(candyType => candyType.name === name);
+    const quantity = buyInputs[name] ? parseInt(buyInputs[name]) : 0;
+
+    // @ts-ignore
+    player.buy(candyType, quantity, player.city.getCandyPrice(candyType));
+    setPlayer(new Player(player));
+  };
+
+  const onSellSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+    e.preventDefault();
+    const {name} = e.currentTarget;
+    const candyType = candyTypes.find(candyType => candyType.name === name);
+    const quantity = sellInputs[name] ? parseInt(sellInputs[name]) : 0;
+
+    // @ts-ignore
+    player.sell(candyType, quantity, player.city.getCandyPrice(candyType));
+    setPlayer(new Player(player));
+  };
+
+  const handleLocationChange = (e: React.MouseEvent<HTMLButtonElement>): void => {
+    const location = locations.find(location => location.name === e.currentTarget.name);
+
+    // @ts-ignore
+    player.travelTo(location, parseInt(e.currentTarget.value));
+    setPlayer(new Player(player));
+  };
+
+  const handleBankTransaction = (e: React.MouseEvent<HTMLButtonElement>): void => {
+    if (e.currentTarget.name === "deposit") {
+      // @ts-ignore
+      player.bank.deposit(player, parseInt(e.currentTarget.value));
+    }
+
+    if (e.currentTarget.name === "withdraw") {
+      // @ts-ignore
+      player.bank.withdraw(player, parseInt(e.currentTarget.value));
+    }
+
+    setPlayer(new Player(player));
+  };
 
   return (
       <>
@@ -35,7 +113,7 @@ export default function Home() {
         </Head>
         <Header name={"Candy Lord"}/>
         <main>
-          <div className={"container"}>
+          <div className={"container mb-5"}>
             <div className={"row"}>
               {player &&
                   <>
@@ -45,8 +123,12 @@ export default function Home() {
                         on
                         Hand
                       </div>
-                      <CandyList candyTypes={candyTypes} player={player}
-                                 price={false}/>
+                      <CandyList candyTypes={candyTypes}
+                                 player={player}
+                                 price={false}
+                                 handleSellInputChange={handleSellInputChange}
+                                 onSellSubmit={onSellSubmit}
+                      />
                     </div>
 
 
@@ -56,8 +138,12 @@ export default function Home() {
                           className={"border-bottom text-center fw-bold"}>Street
                         Prices
                       </div>
-                      <CandyList candyTypes={candyTypes} player={player}
-                                 price={true}/>
+                      <CandyList candyTypes={candyTypes}
+                                 player={player}
+                                 price={true}
+                                 handleBuyInputChange={handleBuyInputChange}
+                                 onBuySubmit={onBuySubmit}
+                      />
                     </div>
 
 
@@ -82,10 +168,24 @@ export default function Home() {
                         </div>
 
 
-                        <div className={"col-12"}>
+                        <div className={"col-12 border-bottom"}>
                           <div className={"row"}>
-                            <PlayerStatus player={player} />
+                            <PlayerStatus player={player}/>
                           </div>
+                        </div>
+
+
+                        <div className={"col-12 border-bottom"}>
+                          <LocationList
+                              handleLocationChange={handleLocationChange}
+                              locations={locations}
+                              player={player}
+                          />
+                        </div>
+
+
+                        <div className={"col-12 border-bottom px-4"}>
+                          <Bank handleBankTransaction={handleBankTransaction} />
                         </div>
                       </div>
                     </div>

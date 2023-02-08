@@ -19,7 +19,7 @@ export default class Bank {
 
   public calculateBalance(): void {
     if (this._balance > 0) {
-      this._balance *= this.INTEREST_RATE / 100 + 1;
+      this._balance = Math.floor(this._balance * (this.INTEREST_RATE / 100 + 1));
     }
   }
 

@@ -21,7 +21,16 @@ export default class Player {
   private _stash = new Stash();
   private _candies: Candy[] = [];
 
-  constructor() {
+  constructor(player?: Player | null) {
+    if (player) {
+      this._cash = player.cash;
+      this._debt = player.debt;
+      this._day = player.day;
+      this._city = player.city;
+      this._bank = player.bank;
+      this._stash = player.stash;
+      this._candies = player.candies;
+    }
   }
 
   public get MAX_CANDIES(): number {
@@ -56,12 +65,24 @@ export default class Player {
     return this._city;
   }
 
+  public set city(city: City) {
+    this._city = city;
+  }
+
   public get bank(): Bank {
     return this._bank;
   }
 
+  public set bank(bank: Bank) {
+    this._bank = bank;
+  }
+
   public get stash(): Stash {
     return this._stash;
+  }
+
+  public set stash(stash: Stash) {
+    this._stash = stash;
   }
 
   public get candies(): Candy[] {
