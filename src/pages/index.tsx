@@ -8,8 +8,7 @@ import CandyList from "@/components/candy/CandyList";
 import PlayerStatus from "@/components/PlayerStatus";
 import {Location as City} from "@/models/City";
 import LocationList from "@/components/location/LocationList";
-import Bank from "@/components/Bank";
-import LoanShark from "@/components/LoanShark";
+import Storage from "@/components/Storage";
 import Shark from "@/models/LoanShark";
 
 interface ICandyTypes {
@@ -92,12 +91,12 @@ export default function Home() {
   };
 
   const handleBankTransaction = (e: React.MouseEvent<HTMLButtonElement>): void => {
-    if (e.currentTarget.name === "deposit") {
+    if (e.currentTarget.name.toLowerCase() === "deposit") {
       // @ts-ignore
       player.bank.deposit(player, parseInt(e.currentTarget.value));
     }
 
-    if (e.currentTarget.name === "withdraw") {
+    if (e.currentTarget.name.toLowerCase() === "withdraw") {
       // @ts-ignore
       player.bank.withdraw(player, parseInt(e.currentTarget.value));
     }
@@ -108,12 +107,12 @@ export default function Home() {
   const handleLoanSharkTransaction = (e: React.MouseEvent<HTMLButtonElement>): void => {
     const shark = new Shark();
 
-    if (e.currentTarget.name === "getLoan") {
+    if (e.currentTarget.name.toLowerCase() === "get loan") {
       // @ts-ignore
       shark.getLoan(player, parseInt(e.currentTarget.value));
     }
 
-    if (e.currentTarget.name === "payDebt") {
+    if (e.currentTarget.name.toLowerCase() === "pay debt") {
       // @ts-ignore
       shark.payOffLoan(player, parseInt(e.currentTarget.value));
     }
@@ -203,14 +202,24 @@ export default function Home() {
 
 
                         <div className={"col-12 border-bottom px-4"}>
-                          <Bank player={player}
-                                handleBankTransaction={handleBankTransaction}/>
+                          <Storage player={player}
+                                   handleTransaction={handleBankTransaction}
+                                   collapseButtonName={"Bank"}
+                                   collapseId={"bank"}
+                                   firstButtonName={"Deposit"}
+                                   secondButtonName={"Withdraw"}
+                          />
                         </div>
 
 
                         <div className={"col-12 border-bottom px-4"}>
-                          <LoanShark player={player}
-                                     handleLoanSharkTransaction={handleLoanSharkTransaction}/>
+                          <Storage player={player}
+                                   handleTransaction={handleLoanSharkTransaction}
+                                   collapseButtonName={"Loan Shark"}
+                                   collapseId={"loanShark"}
+                                   firstButtonName={"Get Loan"}
+                                   secondButtonName={"Pay Debt"}
+                          />
                         </div>
                       </div>
                     </div>
