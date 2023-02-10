@@ -150,7 +150,7 @@ export default class Player {
       this._cash -= price;
       this._day += 1;
       this._bank.calculateBalance();
-      this._debt *= LoanShark.INTEREST_RATE / 100 + 1;
+      this._debt = Math.floor(this._debt * (LoanShark.INTEREST_RATE / 100 + 1));
       RandomGameEvents.next().process(this);
     } else {
       throw new InsufficientFundsException("Insufficient funds.");

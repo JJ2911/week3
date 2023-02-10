@@ -9,6 +9,8 @@ import PlayerStatus from "@/components/PlayerStatus";
 import {Location as City} from "@/models/City";
 import LocationList from "@/components/location/LocationList";
 import Bank from "@/components/Bank";
+import LoanShark from "@/components/LoanShark";
+import Shark from "@/models/LoanShark";
 
 interface ICandyTypes {
   [key: string]: string;
@@ -103,6 +105,22 @@ export default function Home() {
     setPlayer(new Player(player));
   };
 
+  const handleLoanSharkTransaction = (e: React.MouseEvent<HTMLButtonElement>): void => {
+    const shark = new Shark();
+
+    if (e.currentTarget.name === "getLoan") {
+      // @ts-ignore
+      shark.getLoan(player, parseInt(e.currentTarget.value));
+    }
+
+    if (e.currentTarget.name === "payDebt") {
+      // @ts-ignore
+      shark.payOffLoan(player, parseInt(e.currentTarget.value));
+    }
+
+    setPlayer(new Player(player));
+  };
+
   return (
       <>
         <Head>
@@ -125,9 +143,9 @@ export default function Home() {
                       </div>
                       <CandyList candyTypes={candyTypes}
                                  player={player}
-                                 price={false}
-                                 handleSellInputChange={handleSellInputChange}
-                                 onSellSubmit={onSellSubmit}
+                                 handleInputChange={handleSellInputChange}
+                                 onSubmit={onSellSubmit}
+                                 buttonName={"Sell"}
                       />
                     </div>
 
@@ -139,10 +157,10 @@ export default function Home() {
                         Prices
                       </div>
                       <CandyList candyTypes={candyTypes}
-                                 player={player}
-                                 price={true}
-                                 handleBuyInputChange={handleBuyInputChange}
-                                 onBuySubmit={onBuySubmit}
+                                 city={player.city}
+                                 handleInputChange={handleBuyInputChange}
+                                 onSubmit={onBuySubmit}
+                                 buttonName={"Buy"}
                       />
                     </div>
 
@@ -185,7 +203,14 @@ export default function Home() {
 
 
                         <div className={"col-12 border-bottom px-4"}>
-                          <Bank handleBankTransaction={handleBankTransaction} />
+                          <Bank player={player}
+                                handleBankTransaction={handleBankTransaction}/>
+                        </div>
+
+
+                        <div className={"col-12 border-bottom px-4"}>
+                          <LoanShark player={player}
+                                     handleLoanSharkTransaction={handleLoanSharkTransaction}/>
                         </div>
                       </div>
                     </div>

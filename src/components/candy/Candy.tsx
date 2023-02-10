@@ -1,7 +1,7 @@
 interface ICandy {
   name: string;
-  quantity?: number;
-  price?: number;
+  quantity?: number | null;
+  price?: number | null;
 }
 
 export default function Candy({name, quantity, price}: ICandy) {
