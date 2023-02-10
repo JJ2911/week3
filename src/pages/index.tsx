@@ -10,6 +10,7 @@ import {Location as City} from "@/models/City";
 import LocationList from "@/components/location/LocationList";
 import Storage from "@/components/Storage";
 import Shark from "@/models/LoanShark";
+import SelectElement from "@/components/SelectElement";
 
 interface ICandyTypes {
   [key: string]: string;
@@ -41,6 +42,7 @@ export default function Home() {
   const [player, setPlayer] = useState<Player | null>(null);
   const [buyInputs, setBuyInputs] = useState<ICandyTypes>({});
   const [sellInputs, setSellInputs] = useState<ICandyTypes>({});
+  const [selectValue, setSelectValue] = useState<string>(CandyType.MARS.name);
 
   useEffect(() => {
     setPlayer(new Player());
@@ -59,6 +61,10 @@ export default function Home() {
       [e.target.name]: e.target.value
     }));
   }
+
+  const handleCandySelectChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
+    setSelectValue(e.target.value);
+  };
 
   const onBuySubmit = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
@@ -115,6 +121,22 @@ export default function Home() {
     if (e.currentTarget.name.toLowerCase() === "pay debt") {
       // @ts-ignore
       shark.payOffLoan(player, parseInt(e.currentTarget.value));
+    }
+
+    setPlayer(new Player(player));
+  };
+
+  const handleStashTransaction = (e: React.MouseEvent<HTMLButtonElement>): void => {
+    const candyType = candyTypes.find(candyType => candyType.name === selectValue)
+
+    if (e.currentTarget.name.toLowerCase() === "deposit") {
+      // @ts-ignore
+      player.stash.deposit(player, candyType, parseInt(e.currentTarget.value));
+    }
+
+    if (e.currentTarget.name.toLowerCase() === "withdraw") {
+      // @ts-ignore
+      player.stash.withdraw(player, candyType, parseInt(e.currentTarget.value));
     }
 
     setPlayer(new Player(player));
@@ -219,6 +241,21 @@ export default function Home() {
                                    collapseId={"loanShark"}
                                    firstButtonName={"Get Loan"}
                                    secondButtonName={"Pay Debt"}
+                          />
+                        </div>
+
+
+                        <div className={"col-12 border-bottom px-4"}>
+                          <Storage player={player}
+                                   handleTransaction={handleStashTransaction}
+                                   collapseButtonName={"Stash"}
+                                   collapseId={"stash"}
+                                   firstButtonName={"Deposit"}
+                                   secondButtonName={"Withdraw"}
+                                   selectElement={<SelectElement
+                                       list={candyTypes}
+                                       value={selectValue}
+                                       onChange={handleCandySelectChange}/>}
                           />
                         </div>
                       </div>

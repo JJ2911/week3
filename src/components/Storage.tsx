@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import Player from "@/models/Player";
 import {Location} from "@/models/City";
+import SelectElement from "@/components/SelectElement";
 
 interface IStorage {
   player: Player;
@@ -9,6 +10,7 @@ interface IStorage {
   collapseId: string;
   firstButtonName: string;
   secondButtonName: string;
+  selectElement?: JSX.Element;
 }
 
 export default function Storage({
@@ -17,7 +19,8 @@ export default function Storage({
                                   collapseButtonName,
                                   collapseId,
                                   firstButtonName,
-                                  secondButtonName
+                                  secondButtonName,
+                                  selectElement
                                 }: IStorage) {
   const [value, setValue] = useState<number>(0);
 
@@ -41,6 +44,7 @@ export default function Storage({
                        onChange={onChange}
                        className="form-control text-center rounded-bottom-0"
                        placeholder="Amount"/>
+                {selectElement && selectElement}
                 <button className="btn btn-secondary mt-1 rounded-0"
                         onClick={handleTransaction}
                         name={firstButtonName}
@@ -60,5 +64,5 @@ export default function Storage({
           </div>
         </div>
       </div>
-  )
+  );
 };
